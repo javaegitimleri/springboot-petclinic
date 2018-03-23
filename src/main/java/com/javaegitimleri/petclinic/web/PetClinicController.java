@@ -20,6 +20,13 @@ public class PetClinicController {
 		return "Welcome to PetClinic World!";
 	}
 	
+	@RequestMapping(value={"/","/index.html"})
+	public ModelAndView index() {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("index");
+		return mav;
+	}
+	
 	@RequestMapping("/owners")
 	public ModelAndView getOwners() {
 		ModelAndView mav = new ModelAndView();
