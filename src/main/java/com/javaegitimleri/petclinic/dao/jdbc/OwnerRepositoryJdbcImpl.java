@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -40,7 +41,7 @@ public class OwnerRepositoryJdbcImpl implements OwnerRepository {
 	@Override
 	public Owner findById(Long id) {
 		String sql = "select id,first_name,last_name from t_owner where id = ?";
-		return jdbcTemplate.queryForObject(sql, rowMapper, id);
+		return DataAccessUtils.singleResult(jdbcTemplate.query(sql, rowMapper, id));
 	}
 
 	@Override
@@ -63,8 +64,8 @@ public class OwnerRepositoryJdbcImpl implements OwnerRepository {
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
-		
+		String sql = "delete from t_owner where id = ?";
+		jdbcTemplate.update(sql,id);
 	}
 
 }
