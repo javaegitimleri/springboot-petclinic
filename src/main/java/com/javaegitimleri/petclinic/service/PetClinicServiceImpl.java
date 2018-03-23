@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.javaegitimleri.petclinic.dao.OwnerRepository;
@@ -12,7 +13,7 @@ import com.javaegitimleri.petclinic.exception.OwnerNotFoundException;
 import com.javaegitimleri.petclinic.model.Owner;
 
 @Service
-@Transactional
+@Transactional(rollbackFor=Exception.class)
 public class PetClinicServiceImpl implements PetClinicService {
 	
 	private OwnerRepository ownerRepository;
@@ -30,16 +31,19 @@ public class PetClinicServiceImpl implements PetClinicService {
 	}
 
 	@Override
+	@Transactional(propagation=Propagation.SUPPORTS,readOnly=true)
 	public List<Owner> findOwners() {
 		return ownerRepository.findAll();
 	}
 
 	@Override
+	@Transactional(propagation=Propagation.SUPPORTS,readOnly=true)
 	public List<Owner> findOwners(String lastName) {
 		return ownerRepository.findByLastName(lastName);
 	}
 
 	@Override
+	@Transactional(propagation=Propagation.SUPPORTS,readOnly=true)
 	public Owner findOwner(Long id) throws OwnerNotFoundException {
 		Owner owner = ownerRepository.findById(id);
 		if(owner == null) {
