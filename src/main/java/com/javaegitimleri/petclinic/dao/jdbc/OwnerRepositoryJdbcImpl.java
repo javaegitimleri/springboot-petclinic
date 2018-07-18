@@ -1,5 +1,7 @@
 package com.javaegitimleri.petclinic.dao.jdbc;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -7,7 +9,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.javaegitimleri.petclinic.dao.OwnerRepository;
@@ -52,14 +57,30 @@ public class OwnerRepositoryJdbcImpl implements OwnerRepository {
 
 	@Override
 	public void create(Owner owner) {
-		// TODO Auto-generated method stub
-		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		PreparedStatementCreator psc = new PreparedStatementCreator() {
+			
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement stmt = con.prepareStatement(
+						"insert into t_owner(id,first_name,last_name) "
+						+ " values(petclinic_sequence.nextval,?,?)");
+				stmt.setString(1,owner.getFirstName());
+				stmt.setString(2, owner.getLastName());
+				return stmt;
+			}
+		};
+		int count = jdbcTemplate.update(psc, keyHolder);
+		if(count != 1) {
+			throw new RuntimeException("Unable to create owner :" + owner);
+		}
+		owner.setId((Long) keyHolder.getKey());
 	}
 
 	@Override
 	public Owner update(Owner owner) {
 		// TODO Auto-generated method stub
-		return null;
+		return owner;
 	}
 
 	@Override
