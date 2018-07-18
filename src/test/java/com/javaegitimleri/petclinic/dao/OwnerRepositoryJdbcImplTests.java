@@ -41,4 +41,18 @@ public class OwnerRepositoryJdbcImplTests {
 		
 		MatcherAssert.assertThat(count, Matchers.equalTo(1));
 	}
+	
+	@Test
+	public void testUpdateOwner() {
+		Owner o = ownerRepository.findById(1L);
+		o.setFirstName("XXX");
+		o.setLastName("YYY");
+		
+		ownerRepository.update(o);
+		
+		Owner o2 = ownerRepository.findById(1L);
+		
+		MatcherAssert.assertThat(o2.getFirstName(), Matchers.equalTo("XXX"));
+		MatcherAssert.assertThat(o2.getLastName(), Matchers.equalTo("YYY"));
+	}
 }

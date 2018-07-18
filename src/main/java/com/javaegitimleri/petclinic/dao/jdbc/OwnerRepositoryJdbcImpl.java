@@ -79,7 +79,12 @@ public class OwnerRepositoryJdbcImpl implements OwnerRepository {
 
 	@Override
 	public Owner update(Owner owner) {
-		// TODO Auto-generated method stub
+		int count = jdbcTemplate.update("update t_owner "
+				+ "set first_name = ?, last_name = ? "
+				+ "where id = ?",owner.getFirstName(),owner.getLastName(),owner.getId());
+		if(count != 1) {
+			throw new RuntimeException("Unable to update owner :" + owner);
+		}
 		return owner;
 	}
 
