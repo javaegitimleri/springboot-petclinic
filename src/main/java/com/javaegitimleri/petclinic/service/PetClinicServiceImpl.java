@@ -12,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.javaegitimleri.petclinic.dao.OwnerRepository;
 import com.javaegitimleri.petclinic.dao.PetRepository;
+import com.javaegitimleri.petclinic.dao.jpa.VetRepository;
 import com.javaegitimleri.petclinic.exception.OwnerNotFoundException;
+import com.javaegitimleri.petclinic.exception.VetNotFoundException;
 import com.javaegitimleri.petclinic.model.Owner;
+import com.javaegitimleri.petclinic.model.Vet;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -25,6 +28,13 @@ public class PetClinicServiceImpl implements PetClinicService {
 
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	private VetRepository vetRepository;
+	
+	@Autowired
+	public void setVetRepository(VetRepository vetRepository) {
+		this.vetRepository = vetRepository;
+	}
 
 	@Autowired
 	public void setOwnerRepository(OwnerRepository ownerRepository) {
@@ -82,6 +92,16 @@ public class PetClinicServiceImpl implements PetClinicService {
 		petRepository.deleteByOwnerId(id);
 		ownerRepository.delete(id);
 		// if(true) throw new RuntimeException("testing rollback...");
+	}
+
+	@Override
+	public List<Vet> findVets() {
+		return vetRepository.findAll();
+	}
+
+	@Override
+	public Vet findVet(Long id) throws VetNotFoundException {
+		return vetRepository.findById(id).orElseThrow(()->{return new VetNotFoundException("Vet not found by id :" + id);});
 	}
 
 }
