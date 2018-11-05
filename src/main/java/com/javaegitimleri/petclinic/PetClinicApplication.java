@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJpaAuditing
+@EnableJpaAuditing(auditorAwareRef="petClinicAuditorAware")
 @SpringBootApplication
 @EnableConfigurationProperties(value=PetClinicProperties.class)
 @ServletComponentScan
