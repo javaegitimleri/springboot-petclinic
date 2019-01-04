@@ -98,6 +98,7 @@ public class PetClinicRestController {
 	@ResponseStatus(HttpStatus.OK)
 	public void deleteOwner(@PathVariable("id") Long id) {
 		try {
+			petClinicService.findOwner(id);
 			petClinicService.deleteOwner(id);
 		} catch (OwnerNotFoundException ex) {
 			throw ex;

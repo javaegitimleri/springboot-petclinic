@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -98,13 +99,11 @@ public class PetClinicRestControllerTests {
 	
 	@Test
 	public void testDeleteOwner() {
-		restTemplate.delete("http://localhost:8080/rest/owner/1");
+		//restTemplate.delete("http://localhost:8080/rest/owner/1");
+		ResponseEntity<Void> responseEntity = restTemplate.exchange("http://localhost:8080/rest/owner/1", HttpMethod.DELETE,null,Void.class);
+		MatcherAssert.assertThat(responseEntity.getStatusCodeValue(), Matchers.equalTo(200));
 
-		try {
-			restTemplate.getForEntity("http://localhost:8080/rest/owner/1", Owner.class);
-			Assert.fail("Should have not returned owner");
-		} catch (HttpClientErrorException ex) {
-			MatcherAssert.assertThat(ex.getStatusCode().value(), Matchers.equalTo(404));
-		}
+		ResponseEntity<Owner> responseEntity2 = restTemplate.getForEntity("http://localhost:8080/rest/owner/1", Owner.class);
+		MatcherAssert.assertThat(responseEntity2.getStatusCodeValue(), Matchers.equalTo(404));
 	}
 }
