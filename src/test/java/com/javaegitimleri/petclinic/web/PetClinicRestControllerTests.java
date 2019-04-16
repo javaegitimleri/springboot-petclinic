@@ -1,7 +1,6 @@
 package com.javaegitimleri.petclinic.web;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,22 +10,30 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.support.BasicAuthorizationInterceptor;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.javaegitimleri.petclinic.model.Owner;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment=WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("dev")
 public class PetClinicRestControllerTests {
-	private RestTemplate restTemplate;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	@Before
 	public void setUp() {
-		restTemplate = new RestTemplate();
-		BasicAuthorizationInterceptor basicAuthorizationInterceptor = new BasicAuthorizationInterceptor("user2",
-				"secret");	restTemplate.setInterceptors(Arrays.asList(basicAuthorizationInterceptor));
+		restTemplate = restTemplate.withBasicAuth("user2", "secret");
 	}
 
 	@Test
@@ -94,11 +101,9 @@ public class PetClinicRestControllerTests {
 	public void testDeleteOwner() {
 		//restTemplate.delete("http://localhost:8080/rest/owner/1");
 		ResponseEntity<Void> responseEntity = restTemplate.exchange("http://localhost:8080/rest/owner/1", HttpMethod.DELETE,null,Void.class);
-		try {
-			restTemplate.getForEntity("http://localhost:8080/rest/owner/1", Owner.class);
-			Assert.fail("Should have not returned owner");
-		} catch (HttpClientErrorException ex) {
-			MatcherAssert.assertThat(ex.getStatusCode().value(), Matchers.equalTo(404));
-		}
+		MatcherAssert.assertThat(responseEntity.getStatusCodeValue(), Matchers.equalTo(200));
+
+		ResponseEntity<Owner> responseEntity2 = restTemplate.getForEntity("http://localhost:8080/rest/owner/1", Owner.class);
+		MatcherAssert.assertThat(responseEntity2.getStatusCodeValue(), Matchers.equalTo(404));
 	}
 }
