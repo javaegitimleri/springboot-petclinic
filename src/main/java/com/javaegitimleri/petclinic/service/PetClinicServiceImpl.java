@@ -2,6 +2,8 @@ package com.javaegitimleri.petclinic.service;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.javaegitimleri.petclinic.dao.OwnerRepository;
 import com.javaegitimleri.petclinic.dao.PetRepository;
@@ -19,6 +22,7 @@ import com.javaegitimleri.petclinic.exception.VetNotFoundException;
 import com.javaegitimleri.petclinic.model.Owner;
 import com.javaegitimleri.petclinic.model.Vet;
 
+@Validated
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class PetClinicServiceImpl implements PetClinicService {
@@ -72,7 +76,7 @@ public class PetClinicServiceImpl implements PetClinicService {
 
 	@Override
 	@CacheEvict(cacheNames="allOwners",allEntries=true)
-	public void createOwner(Owner owner) {
+	public void createOwner(@Valid Owner owner) {
 		ownerRepository.create(owner);
 
 		SimpleMailMessage msg = new SimpleMailMessage();

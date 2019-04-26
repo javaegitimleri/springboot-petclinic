@@ -3,6 +3,8 @@ package com.javaegitimleri.petclinic.web;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.hateoas.Link;
@@ -77,7 +79,10 @@ public class PetClinicRestController {
 			Long id = owner.getId();
 			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
 			return ResponseEntity.created(location).build();
-		} catch (Exception ex) {
+		} catch(ConstraintViolationException ex) { 
+			return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).build();
+		}
+		catch (Exception ex) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
